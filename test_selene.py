@@ -6,6 +6,8 @@ from selene import query
 import pytest
 import time
 
+result1 = []
+result2 = []
 
 browser.open_url("https://www.tutu.ru/poezda/")
 s("[name=schedule_station_from]").set_value("Москва")
@@ -19,7 +21,9 @@ if s("[data-ti='filter-sapsan']").should(be.visible, timeout=10):
     while last_departure_time.get(query.text) != "23:55":
         s("(//div[@data-ti='offer-card']/..)[last()]").perform(command.js.scroll_into_view)
 if last_departure_time.get(query.text) == "23:55":
-    time_route1 = ss("//span[@data-ti='stopover-time']")
+    route_time1 = ss("//span[@data-ti='stopover-time']")
+    for i in range(len(route_time1)):
+        result1.append(route_time1[i].get(query.text))
 
 
 s("[data-ti='icon']").click()
@@ -31,10 +35,21 @@ if s("[data-ti='filter-sapsan']").should(be.visible, timeout=10):
     while last_departure_time.get(query.text) != "23:55":
         s("(//div[@data-ti='offer-card']/..)[last()]").perform(command.js.scroll_into_view)
 if last_departure_time.get(query.text) == "23:55":
-    time_route2 = ss("//span[@data-ti='stopover-time']")
+    route_time2 = ss("//span[@data-ti='stopover-time']")
+    for i in range(len(route_time2)):
+        result2.append(route_time2[i].get(query.text))
 
 
 def test_different_search_results():
-    print("\nSearch 1 results amount:", len(time_route1) / 2)
-    print("Search 2 results amount:", len(time_route2) / 2)
-    assert (time_route1 != time_route2), "Lists are matching"
+    amount1 = int(len(result1)/2)
+    amount2 = int(len(result2)/2)
+    print("\nSearch 1 results amount:", amount1)
+    print("Search 2 results amount:", amount2)
+    k = 0
+    j = 1
+    for i in range(min(amount1, amount2)):
+        print(i+1, ": ", result1[k], "->", result1[j], " | ", result2[k], "->", result2[j])
+        k = k + 2
+        j = j + 2
+
+    assert (result1 != result2), "Lists are matching"
