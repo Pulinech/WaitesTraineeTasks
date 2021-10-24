@@ -19,7 +19,9 @@ class SearchPageLocators:
     high_rating = "9"
     train_schedule_bigger_rating = ss(f"//div[@data-ti='rating']/span[text()>{high_rating}]"
                                       f"/ancestor::div[@data-ti='train-offer-card']//span[@data-ti='stopover-time']")
-    station = "'Ленинградский вокзал1"
-    station_city = "Москва'"
-    certain_station_reviews = s(f"//span[@data-ti='stopover-place'][text()={station}, {station_city}]"
+    station = "Ленинградский вокзал"
+    station_city = "Москва"
+    certain_station_block = s(f"//span[@data-ti='stopover-place'][text()='{station}, {station_city}']"
+                              "/ancestor::div[@data-ti='offer-card']")
+    certain_station_reviews = s(f"//span[@data-ti='stopover-place'][text()='{station}, {station_city}']"
                                 f"/ancestor::div[@data-ti='offer-card']//span[@data-ti='rating_badge_link']")

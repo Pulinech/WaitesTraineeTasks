@@ -17,7 +17,8 @@ class SearchPage:
         self.low_rating_trains = []
         self.high_rating_trains = []
 
-    def search_trains_from_city_a_to_city_b(self, city_a="Москва", city_b="Санкт-Петербург"):
+    @staticmethod
+    def search_trains_from_city_a_to_city_b(city_a="Москва", city_b="Санкт-Петербург"):
         s("[name=schedule_station_from]").set_value(city_a)
         s("[name=schedule_station_to]").set_value(city_b)
         s("[data-ti='date_arrow_increase']").click()
@@ -34,7 +35,8 @@ class SearchPage:
                 result1.append(route_time1[i].get(query.text))
         self.result1 = result1
 
-    def search_trains_from_city_b_to_city_a(self):
+    @staticmethod
+    def search_trains_from_city_b_to_city_a():
         s("[data-ti='icon']").click()
         s("[data-ti='swap_stations']").click()
         s("[data-ti='submit_button']").click()
@@ -53,19 +55,23 @@ class SearchPage:
     def should_be_different_trains_schedule(self):
         assert (self.result1 != self.result2), "Lists are matching"
 
-    def print_trains_schedules(self):
+    def print_and_write_to_file_trains_schedules(self):
         result1 = self.result1
         result2 = self.result2
         amount1 = int(len(result1) / 2)
         amount2 = int(len(result2) / 2)
+        f = open("search_different_results.txt", "w")
+        f.write("Search 1 results amount:" + str(amount1) + "\n" + "Search 2 results amount:" + str(amount2) + "\n")
         print("\nSearch 1 results amount:", amount1)
         print("Search 2 results amount:", amount2)
         k = 0
         j = 1
         for i in range(min(amount1, amount2)):
             print(i + 1, ": ", result1[k], "->", result1[j], " | ", result2[k], "->", result2[j])
+            f.write(str(i+1) + ": " + result1[k] + "->" + result1[j] + " | " + result2[k] + "->" + result2[j] + "\n")
             k = k + 2
             j = j + 2
+        f.close()
 
     def get_trains_with_rating_lower_than(self, low_rating="8.5"):
         self.low_rating = low_rating
@@ -79,33 +85,43 @@ class SearchPage:
             self.high_rating_trains.append(self.locator.train_schedule_bigger_rating[i].get(query.text))
         assert self.high_rating_trains, "There are no trains with rating higher than 9"
 
-    def print_low_rating_trains_schedule(self):
+    def print_and_write_to_file_low_rating_trains_schedule(self):
         low_rating_trains = self.low_rating_trains
         amount = int(len(low_rating_trains) / 2)
+        f = open("low_rating_trains.txt", "w")
+        f.write("Low rating trains amount:" + str(amount) + "\n")
         print("\nLow rating trains amount:", amount)
         k = 0
         j = 1
         for i in range(amount):
             print(i + 1, ": ", low_rating_trains[k], "->", low_rating_trains[j])
+            f.write(str(i + 1) + ": " + low_rating_trains[k] + "->" + low_rating_trains[j] + "\n")
             k = k + 2
             j = j + 2
+        f.close()
 
-    def print_high_rating_trains_schedule(self):
+    def print_and_write_to_file_high_rating_trains_schedule(self):
         high_rating_trains = self.high_rating_trains
         amount = int(len(high_rating_trains) / 2)
+        f = open("high_rating_trains.txt", "w")
+        f.write("High rating trains amount:" + str(amount) + "\n")
         print("\nHigh rating trains amount:", amount)
         k = 0
         j = 1
         for i in range(amount):
             print(i + 1, ": ", high_rating_trains[k], "->", high_rating_trains[j])
+            f.write(str(i + 1) + ": " + high_rating_trains[k] + "->" + high_rating_trains[j] + "\n")
             k = k + 2
             j = j + 2
+        f.close()
 
     def should_be_info_of_train_from_certain_terminal(self):
-        s("[data-ti='icon']").perform(command.js.scroll_into_view)
-        assert self.locator.certain_station_reviews.click(), f"There is no train from {self.locator.station}, {self.locator.station_city}"
+        self.locator.certain_station_block.perform(command.js.scroll_into_view)
+        assert self.locator.certain_station_reviews.click(),\
+            f"There is no train from {self.locator.station}, {self.locator.station_city}"
 
-    def should_be_trip_details_and_certain_city_terminal(self):
+    @staticmethod
+    def should_be_trip_details_and_certain_city_terminal():
         assert s("//div[@data-ti='order-popper-slot-top']").should(be.visible), "Trip details doesn't open"
         assert s("//span[@data-ti='city']").should(be.visible), "Trip details city doesn't match"
         assert s("//span[@data-ti='station']").should(be.visible), "Trip details terminal doesn't match"
