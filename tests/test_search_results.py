@@ -1,10 +1,10 @@
 from pages.search_page import SearchPage
 from selene.support.shared import browser
 import pytest
+link = "https://www.tutu.ru/poezda/"
 
 
 def test_different_search_results():
-    link = "https://www.tutu.ru/poezda/"
     browser.open_url(link)
     page = SearchPage()
     page.search_trains_from_city_a_to_city_b()
@@ -13,3 +13,26 @@ def test_different_search_results():
     page.get_trains_from_city_b_to_city_a_schedule()
     page.should_be_different_trains_schedule()
     page.print_trains_schedules()
+    browser.quit()
+
+
+def test_find_certain_rating_trains():
+    browser.open_url(link)
+    page = SearchPage()
+    page.search_trains_from_city_a_to_city_b()
+    page.get_trains_from_city_a_to_city_b_schedule()
+    page.get_trains_with_rating_lower_than()
+    page.get_trains_with_rating_higher_than()
+    page.print_low_rating_trains_schedule()
+    page.print_high_rating_trains_schedule()
+    browser.quit()
+
+
+def test_find_certain_terminal_and_check_info_about_trip():
+    browser.open_url(link)
+    page = SearchPage()
+    page.search_trains_from_city_a_to_city_b()
+    page.get_trains_from_city_a_to_city_b_schedule()
+    page.should_be_info_of_train_from_certain_terminal()
+    page.should_be_trip_details_and_certain_city_terminal()
+    browser.quit()
