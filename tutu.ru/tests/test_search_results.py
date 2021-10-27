@@ -1,7 +1,5 @@
 from pages.search_page import SearchPage
 from selene.support.shared import browser
-import pytest
-
 
 link = "https://www.tutu.ru/poezda/"
 page = SearchPage()

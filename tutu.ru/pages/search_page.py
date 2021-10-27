@@ -1,6 +1,6 @@
 from pages.locators import SearchPageLocators
-from selene.support.shared.jquery_style import s, ss
-from selene import by, be, have
+from selene.support.shared.jquery_style import s
+from selene import be
 from selene import command
 from selene import query
 
@@ -8,8 +8,6 @@ from selene import query
 class SearchPage:
 
     locator = SearchPageLocators()
-    low_rating = ""
-    high_rating = ""
 
     def __init__(self):
         self.result1 = []
@@ -73,14 +71,12 @@ class SearchPage:
             j = j + 2
         f.close()
 
-    def get_trains_with_rating_lower_than(self, low_rating="8.5"):
-        self.low_rating = low_rating
+    def get_trains_with_rating_lower_than(self):
         for i in range(len(self.locator.train_schedule_lower_rating)):
             self.low_rating_trains.append(self.locator.train_schedule_lower_rating[i].get(query.text))
         assert self.low_rating_trains, "There are no trains with rating lower than 8.5"
 
-    def get_trains_with_rating_higher_than(self, high_rating="9"):
-        self.high_rating = high_rating
+    def get_trains_with_rating_higher_than(self):
         for i in range(len(self.locator.train_schedule_bigger_rating)):
             self.high_rating_trains.append(self.locator.train_schedule_bigger_rating[i].get(query.text))
         assert self.high_rating_trains, "There are no trains with rating higher than 9"
@@ -117,11 +113,10 @@ class SearchPage:
 
     def should_be_info_of_train_from_certain_terminal(self):
         self.locator.certain_station_block.perform(command.js.scroll_into_view)
-        assert self.locator.certain_station_reviews.click(),\
-            f"There is no train from {self.locator.station}, {self.locator.station_city}"
+        self.locator.certain_station_reviews.click()
 
     @staticmethod
     def should_be_trip_details_and_certain_city_terminal():
-        assert s("//div[@data-ti='order-popper-slot-top']").should(be.visible), "Trip details doesn't open"
-        assert s("//span[@data-ti='city']").should(be.visible), "Trip details city doesn't match"
-        assert s("//span[@data-ti='station']").should(be.visible), "Trip details terminal doesn't match"
+        s("//div[@data-ti='order-popper-slot-top']").should(be.visible)
+        s("//span[@data-ti='city']").should(be.visible)
+        s("//span[@data-ti='station']").should(be.visible)

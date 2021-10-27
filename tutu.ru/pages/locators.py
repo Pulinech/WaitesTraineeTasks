@@ -4,15 +4,11 @@ from selene import command
 from selene import query
 
 
-# import pages.search_page
-
-
 class SearchPageLocators:
     last_departure_time = s("(//div[@data-ti='card-departure-0']//span[@data-ti='stopover-time'])[last()]")
     results_load = s("[data-ti='filter-sapsan']")
     last_search_element = s("(//div[@data-ti='offer-card']/..)[last()]")
     train_schedule = ss("//span[@data-ti='stopover-time']")
-    #   pages.search_page
     low_rating = "8.5"
     train_schedule_lower_rating = ss(f"//div[@data-ti='rating']/span[text()<{low_rating}]"
                                      f"/ancestor::div[@data-ti='train-offer-card']//span[@data-ti='stopover-time']")
