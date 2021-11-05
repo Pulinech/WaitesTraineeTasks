@@ -1,14 +1,11 @@
-import time
-
 from selene.support.shared.jquery_style import s, ss
 from selene.support.shared import browser
 from selene import have
 
-browser.open_url("https://todomvc.com/examples/react/")
-tasks_list = ["a", "1"]
 
+def test_common_tasks_management(add_text):
+    browser.open_url("#/")
 
-def test_common_tasks_management():
     # Add
     s(".new-todo").type('a').press_enter()
     s(".new-todo").type('b').press_enter()
@@ -17,7 +14,7 @@ def test_common_tasks_management():
 
     # Edit
     ss(".todo-list>li").element_by(have.exact_text('b')).double_click()
-    ss(".todo-list>li").element_by(have.css_class("editing")).s(".edit").type(' edited').press_enter()
+    ss(".todo-list>li").element_by(have.css_class("editing")).s(".edit").type(add_text).press_enter()
 
     # Complete & Clear
     ss(".todo-list>li").element_by(have.exact_text('b edited')).s(".toggle").click()

@@ -1,27 +1,24 @@
-import time
-
 from selene.support.shared.jquery_style import s, ss
 from selene.support.shared import browser
 from selene import have
 
-browser.open_url("https://todomvc.com/examples/react/")
-tasks_list = ["a", "1"]
 
+def test_common_tasks_management(add_text):
+    open_app()
 
-def test_common_tasks_management():
     add('a', 'b', 'c')
-    should_have_text('a', 'b', 'c')
+    assert_text('a', 'b', 'c')
 
-    edit('b', ' edited')
+    edit('b', add_text)
 
     complete('b edited')
     clear_completed()
-    should_have_text('a', 'c')
+    assert_text('a', 'c')
 
     cancel_edit('c', ' to be edited')
 
     delete('c')
-    should_have_text('a')
+    assert_text('a')
 
 
 def add(*texts: str):
@@ -29,7 +26,7 @@ def add(*texts: str):
         s(".new-todo").type(text).press_enter()
 
 
-def should_have_text(*texts: str):
+def assert_text(*texts: str):
     ss('.todo-list>li').should(have.exact_texts(*texts))
 
 
@@ -53,3 +50,7 @@ def cancel_edit(text: str, add_text: str):
 
 def delete(text: str):
     ss(".todo-list>li").element_by(have.exact_text(text)).hover().s(".destroy").click()
+
+
+def open_app():
+    browser.open("#/")
