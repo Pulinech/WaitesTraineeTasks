@@ -1,3 +1,5 @@
+import time
+
 from selene.support.shared.jquery_style import s, ss
 from selene.support.shared import browser
 from selene import have
@@ -33,6 +35,8 @@ def test_filtering():
     filter_active()
     assert_text('a', 'c')
 
+    filter_all()
+
 
 def add(*texts: str):
     for text in texts:
@@ -45,20 +49,21 @@ def assert_text(*texts: str):
 
 def edit(text: str, add_text: str):
     ss(".todo-list>li").element_by(have.exact_text(text)).double_click()
-    return ss(".todo-list>li").element_by(have.css_class("editing")).s(".edit").type(add_text).press_enter()
-
-
-def toggle(text: str):
-    ss(".todo-list>li").element_by(have.exact_text(text)).s(".toggle").click()
-
-
-def clear_completed():
-    s(".clear-completed").click()
+    ss(".todo-list>li").element_by(have.css_class("editing")).s(".edit").type(add_text).press_enter()
 
 
 def cancel_edit(text: str, add_text: str):
     ss(".todo-list>li").element_by(have.exact_text(text)).double_click()
     ss(".todo-list>li").element_by(have.css_class("editing")).s(".edit").type(add_text).press_escape()
+
+
+def toggle(*texts: str):
+    for text in texts:
+        ss(".todo-list>li").element_by(have.exact_text(text)).s(".toggle").click()
+
+
+def clear_completed():
+    s(".clear-completed").click()
 
 
 def delete(text: str):
@@ -67,6 +72,10 @@ def delete(text: str):
 
 def open_app():
     browser.open("#/")
+
+
+def filter_all():
+    s(by.partial_link_text("All")).click()
 
 
 def filter_completed():
