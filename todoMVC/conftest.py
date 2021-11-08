@@ -1,3 +1,5 @@
+import time
+
 from selene.support.shared import config, browser
 import requests
 import pytest
@@ -25,12 +27,16 @@ def browser_setup(request):
     save_page_source = request.config.getoption("save_page_source")
     browser.config.save_page_source_on_failure = save_page_source
 
+    browser.config.set_value_by_js = True
+
 
 @pytest.fixture(autouse=True)
 def todomvc_with_cleared_data_after_test():
     browser.open('#/')
     yield
+    browser.open('#/')
     browser.clear_local_storage()
+
 
 
 @pytest.fixture
