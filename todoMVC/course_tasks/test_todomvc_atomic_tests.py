@@ -1,7 +1,4 @@
-import time
-
 from selene.support.shared.jquery_style import s, ss
-from selene.support.shared import browser
 from selene import have
 from selene import by
 import pytest
@@ -34,8 +31,6 @@ def test_filtering():
 
     filter_active()
     assert_text('a', 'c')
-
-    # filter_all()
 
 
 def test_add():
@@ -150,10 +145,6 @@ def clear_completed():
 
 def delete(text: str):
     ss(".todo-list>li").element_by(have.exact_text(text)).hover().s(".destroy").click()
-
-
-def open_app():
-    browser.open("#/")
 
 
 def filter_all():

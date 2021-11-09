@@ -39,7 +39,6 @@ def todomvc_with_cleared_data_after_test():
     browser.clear_local_storage()
 
 
-
 @pytest.fixture
 def add_text(request):
     return request.config.getoption('--edit_task')
