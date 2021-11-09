@@ -34,6 +34,7 @@ def browser_setup(request):
 def todomvc_with_cleared_data_after_test():
     browser.open('#/')
     yield
+    # Reopen filter All, because clear_local_storage doesn't work at Active/Completed filters
     browser.open('#/')
     browser.clear_local_storage()
 

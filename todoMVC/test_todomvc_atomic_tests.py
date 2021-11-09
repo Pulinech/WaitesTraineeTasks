@@ -11,7 +11,7 @@ def test_common_tasks_management(add_text):
     add('a', 'b', 'c')
     assert_text('a', 'b', 'c')
 
-    edit('b', add_text)
+    edit_enter('b', add_text)
 
     toggle('b edited')
     clear_completed()
@@ -38,23 +38,14 @@ def test_filtering():
     # filter_all()
 
 
-def test_toggle():
+def test_add():
     add('a')
-    toggle('a')
-    clear_completed()
-    assert_text()
-
-
-def test_toggle_all():
-    add('a', 'b')
-    toggle_all()
-    clear_completed()
-    assert_text()
+    assert_text('a')
 
 
 def test_edit():
     add('a')
-    edit('a', ' edited')
+    edit_enter('a', ' edited')
     assert_text('a edited')
 
 
@@ -64,10 +55,58 @@ def test_cancel_edit():
     assert_text('a')
 
 
+def test_edit_by_tab():
+    add('a')
+    edit_tab('a', ' edited')
+    assert_text('a edited')
+
+
+def test_edit_by_click_outside():
+    add('a')
+    edit_click_outside('a', ' edited')
+    assert_text('a edited')
+
+
 def test_delete():
     add('a')
     delete('a')
     assert_text()
+
+
+def test_complete():
+    add('a')
+    toggle('a')
+    filter_completed()
+    assert_text('a')
+
+
+def test_uncomplete():
+    add('a')
+    toggle('a', 'a')
+    filter_active()
+    assert_text('a')
+
+
+def test_complete_all():
+    add('a', 'b')
+    toggle_all()
+    filter_completed()
+    assert_text('a', 'b')
+
+
+def test_uncomplete_all():
+    add('a', 'b')
+    toggle_all()
+    toggle_all()
+    filter_active()
+    assert_text('a', 'b')
+
+
+def test_clear_completed():
+    add('a', 'b')
+    toggle('b')
+    clear_completed()
+    assert_text('a')
 
 
 def add(*texts: str):
@@ -79,9 +118,20 @@ def assert_text(*texts: str):
     ss('.todo-list>li').should(have.exact_texts(*texts))
 
 
-def edit(text: str, add_text: str):
+def edit_enter(text: str, add_text: str):
     ss(".todo-list>li").element_by(have.exact_text(text)).double_click()
     ss(".todo-list>li").element_by(have.css_class("editing")).s(".edit").type(add_text).press_enter()
+
+
+def edit_tab(text: str, add_text: str):
+    ss(".todo-list>li").element_by(have.exact_text(text)).double_click()
+    ss(".todo-list>li").element_by(have.css_class("editing")).s(".edit").type(add_text).press_tab()
+
+
+def edit_click_outside(text: str, add_text: str):
+    ss(".todo-list>li").element_by(have.exact_text(text)).double_click()
+    ss(".todo-list>li").element_by(have.css_class("editing")).s(".edit").type(add_text)
+    s("h1").click()
 
 
 def cancel_edit(text: str, add_text: str):
