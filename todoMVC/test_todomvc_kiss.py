@@ -11,7 +11,7 @@ def test_common_tasks_management(add_text):
 
     edit('b', add_text)
 
-    complete('b edited')
+    toggle('b edited')
     clear_completed()
     assert_text('a', 'c')
 
@@ -32,10 +32,10 @@ def assert_text(*texts: str):
 
 def edit(text: str, add_text: str):
     ss(".todo-list>li").element_by(have.exact_text(text)).double_click()
-    return ss(".todo-list>li").element_by(have.css_class("editing")).s(".edit").type(add_text).press_enter()
+    ss(".todo-list>li").element_by(have.css_class("editing")).s(".edit").type(add_text).press_enter()
 
 
-def complete(text: str):
+def toggle(text: str):
     ss(".todo-list>li").element_by(have.exact_text(text)).s(".toggle").click()
 
 

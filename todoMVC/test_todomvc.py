@@ -4,7 +4,7 @@ from selene import have
 
 
 def test_common_tasks_management(add_text):
-    browser.open_url("#/")
+    browser.open("#/")
 
     # Add
     s(".new-todo").type('a').press_enter()
