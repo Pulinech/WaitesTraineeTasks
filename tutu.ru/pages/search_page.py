@@ -17,9 +17,9 @@ class SearchPage:
 
     @staticmethod
     def search_trains_from_city_a_to_city_b(city_a="Москва", city_b="Санкт-Петербург"):
-        s("[name=schedule_station_from]").set_value(city_a)
-        s("[name=schedule_station_to]").set_value(city_b)
-        s("[data-ti='date_arrow_increase']").click()
+        s("[name=schedule_station_from]").type(city_a)
+        s("[name=schedule_station_to]").type(city_b)
+        s("button.increase").click()
         s(".button_wrp").click()
 
     def get_trains_from_city_a_to_city_b_schedule(self):
