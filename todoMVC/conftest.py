@@ -1,5 +1,3 @@
-import time
-
 from selene.support.shared import config, browser
 import requests
 import pytest
