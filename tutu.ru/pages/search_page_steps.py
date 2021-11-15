@@ -1,54 +1,60 @@
-from pages.locators import SearchPageLocators
-from selene.support.shared.jquery_style import s
-from selene import be
-from selene import command
-from selene import query
+from selene.support.shared.jquery_style import s, ss
+from selene import be, command, query, have
 
 
 class SearchPage:
 
-    locator = SearchPageLocators()
-
     def __init__(self):
+        # Global variables
         self.result1 = []
         self.result2 = []
         self.low_rating_trains = []
         self.high_rating_trains = []
 
-    @staticmethod
-    def search_trains_from_city_a_to_city_b(city_a="Москва", city_b="Санкт-Петербург"):
+        # Buttons
+        self.next_day_btn = s("button.increase")
+        self.find_results_btn = s(".button_wrp")
+        self.change_city_btn = s("[data-ti='icon']")
+
+        # Train schedules
+        self.departure_time = ss("//div[@data-ti='card-departure-0']//span")
+        self.results_load = s("[data-ti='filter-sapsan']")
+        self.last_search_element = s("(//div[@data-ti='offer-card']/..)[last()]")
+        self.train_schedule = ss("//span[@data-ti='stopover-time']")
+        self.train_schedule_lower_rating = ss("//div[@data-ti='rating']/span[text()<8.5]/ancestor::"
+                                              "div[@data-ti='train-offer-card']//span[@data-ti='stopover-time']")
+        self.train_schedule_bigger_rating = ss("//div[@data-ti='rating']/span[text()>9]/ancestor::"
+                                               "div[@data-ti='train-offer-card']//span[@data-ti='stopover-time']")
+        self.certain_station_block = ss("//span[@data-ti='stopover-place']")\
+            .element_by(have.text('Ленинградский вокзал, Москва')).s("//ancestor::div[@data-ti='offer-card']")
+        self.certain_station_reviews = self.certain_station_block.s("//span[@data-ti='rating_badge_link']")
+
+    def search_trains_from_city_a_to_city_b(self, city_a="Москва", city_b="Санкт-Петербург"):
         s("[name=schedule_station_from]").type(city_a)
         s("[name=schedule_station_to]").type(city_b)
-        s("button.increase").click()
-        s(".button_wrp").click()
+        self.next_day_btn.click()
+        self.find_results_btn.click()
 
     def get_trains_from_city_a_to_city_b_schedule(self):
-        if self.locator.results_load.should(be.visible, timeout=10):
-            while self.locator.last_departure_time.get(query.text) != "23:55":
-                self.locator.last_search_element.perform(command.js.scroll_into_view)
-        result1 = []
-        if self.locator.last_departure_time.get(query.text) == "23:55":
-            route_time1 = self.locator.train_schedule
-            for i in range(len(route_time1)):
-                result1.append(route_time1[i].get(query.text))
-        self.result1 = result1
+        if self.results_load.should(be.visible, timeout=20):
+            for i in range(len(self.departure_time)):
+                self.last_search_element.perform(command.js.scroll_into_view)
+        route_time1 = self.train_schedule
+        for i in range(len(route_time1)):
+            self.result1.append(route_time1[i].get(query.text))
 
-    @staticmethod
-    def search_trains_from_city_b_to_city_a():
-        s("[data-ti='icon']").click()
+    def search_trains_from_city_b_to_city_a(self):
+        self.change_city_btn.click()
         s("[data-ti='swap_stations']").click()
         s("[data-ti='submit_button']").click()
 
     def get_trains_from_city_b_to_city_a_schedule(self):
-        if self.locator.results_load.should(be.visible, timeout=10):
-            while self.locator.last_departure_time.get(query.text) != "23:55":
-                self.locator.last_search_element.perform(command.js.scroll_into_view)
-        result2 = []
-        if self.locator.last_departure_time.get(query.text) == "23:55":
-            route_time2 = self.locator.train_schedule
-            for i in range(len(route_time2)):
-                result2.append(route_time2[i].get(query.text))
-        self.result2 = result2
+        if self.results_load.should(be.visible, timeout=20):
+            for i in range(len(self.departure_time)):
+                self.last_search_element.perform(command.js.scroll_into_view)
+        route_time2 = self.train_schedule
+        for i in range(len(route_time2)):
+            self.result2.append(route_time2[i].get(query.text))
 
     def should_be_different_trains_schedule(self):
         assert (self.result1 != self.result2), "Lists are matching"
@@ -72,13 +78,13 @@ class SearchPage:
         f.close()
 
     def get_trains_with_rating_lower_than(self):
-        for i in range(len(self.locator.train_schedule_lower_rating)):
-            self.low_rating_trains.append(self.locator.train_schedule_lower_rating[i].get(query.text))
+        for i in range(len(self.train_schedule_lower_rating)):
+            self.low_rating_trains.append(self.train_schedule_lower_rating[i].get(query.text))
         assert self.low_rating_trains, "There are no trains with rating lower than 8.5"
 
     def get_trains_with_rating_higher_than(self):
-        for i in range(len(self.locator.train_schedule_bigger_rating)):
-            self.high_rating_trains.append(self.locator.train_schedule_bigger_rating[i].get(query.text))
+        for i in range(len(self.train_schedule_bigger_rating)):
+            self.high_rating_trains.append(self.train_schedule_bigger_rating[i].get(query.text))
         assert self.high_rating_trains, "There are no trains with rating higher than 9"
 
     def print_and_write_to_file_low_rating_trains_schedule(self):
@@ -111,12 +117,8 @@ class SearchPage:
             j = j + 2
         f.close()
 
-    def should_be_info_of_train_from_certain_terminal(self):
-        self.locator.certain_station_block.perform(command.js.scroll_into_view)
-        self.locator.certain_station_reviews.click()
-
-    @staticmethod
-    def should_be_trip_details_and_certain_city_terminal():
-        s("//div[@data-ti='order-popper-slot-top']").should(be.visible)
+    def should_be_trip_details_and_certain_city_terminal(self):
+        self.certain_station_block.perform(command.js.scroll_into_view)
+        self.certain_station_reviews.click()
         s("//span[@data-ti='city']").should(be.visible)
         s("//span[@data-ti='station']").should(be.visible)
