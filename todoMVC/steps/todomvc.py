@@ -1,6 +1,6 @@
 from selene.support.shared.jquery_style import s, ss
-from selene import have
-from selene import by
+from selene.support.shared import browser
+from selene import have, by
 
 
 class TodoMVC:
@@ -68,3 +68,18 @@ class TodoMVC:
 
     def toggle_all(self):
         self.btn_toggle_all.click()
+
+    @staticmethod
+    def open_in_new_tab(link: str):
+        browser.execute_script(f'''window.open("{link}","_blank");''')
+        return browser
+
+    @staticmethod
+    def check_tab_name(name: str):
+        print(browser.title())
+        assert browser.title() == name
+
+    @staticmethod
+    def switch_to_tab(tab):
+        browser.switch_to_tab(tab)
+        browser.driver.refresh()

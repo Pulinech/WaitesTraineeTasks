@@ -16,15 +16,15 @@ def pytest_addoption(parser):
 @pytest.fixture(autouse=True)
 def browser_setup(request):
     base_url = request.config.getoption("base_url")
-    browser.config.base_url = base_url
+    config.base_url = base_url
 
     timeout = request.config.getoption("timeout")
-    browser.config.timeout = float(timeout)
+    config.timeout = float(timeout)
 
     save_page_source = request.config.getoption("save_page_source")
-    browser.config.save_page_source_on_failure = save_page_source
+    config.save_page_source_on_failure = save_page_source
 
-    browser.config.set_value_by_js = True
+    config.set_value_by_js = True
 
 
 @pytest.fixture(autouse=True)
